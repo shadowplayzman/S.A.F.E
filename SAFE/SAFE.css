@@ -151,3 +151,35 @@ nav a:hover{
     border-radius: 15px;
     background-color: #e4eee6;
 }
+.stats-section h2{
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+.stats-section>p{
+    color: #687b88;
+    margin-bottom: 25px;
+}
+.stats-container{
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 20px;
+}
+.stat-card{
+    background-color: white;
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #d4e3d8;
+}
+.stat-icon{
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+.stat-card h3{
+    font-size: 32px;
+    color: #176b52;
+    margin-bottom: 8px;
+}
+.stat-card p{
+    color: #687b88;
+    font-size: 14px;
+}
