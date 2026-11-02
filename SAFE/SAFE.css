@@ -1,0 +1,147 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    font-family: Arial, sans-serif;
+    background-color: #f6f8f7;
+    color: #172b3a;
+}
+.navbar{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 6%;
+    background-color: white;
+    border-bottom: 1px solid #e3eae7;
+}
+.logo{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.logo-icon{
+    font-size: 30px;
+}
+.logo h2 {
+    font-size: 20px;
+}
+.logo p{
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: #687b88;
+}
+nav{
+    display: flex;
+    gap: 28px;
+}
+nav a{
+    text-decoration: none;
+    color: #687b88;
+    font-size: 14px;
+}
+nav a:hover{
+    color: #176b52;
+}
+.nav-button {
+    background-color: #176b52;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 13px;
+}
+.hero{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 60px;
+
+    padding: 90px 6%;
+    min-height: 500px;
+}
+.hero-content{
+    max-width: 550px;
+}
+.eyebrow{
+    color: #176b52;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 22px;
+}
+.hero h1{
+    font-size: clamp(38px,4vw,58px);
+    line-height: 1.12;
+    letter-spacing: -2px;
+    margin-bottom: 20px;
+}
+.hero h1 span{
+    color: #3a9a75;
+}
+.hero-description{
+    color: #687b88;
+    font-size: 15px;
+    line-height: 1.8;
+    margin-bottom: 28px;
+}
+.hero-actions{
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+.primary-button{
+    display: inline-block;
+    padding: 15px 20px;
+    border-radius: 6px;
+    background: #176b52;
+    color: white;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: bold;
+}
+.primary-button:hover{
+    background: #104d3e;
+}
+.secondary-link{
+    color:#456258 ;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: bold;
+
+}
+.hero-visual {
+    min-height: 340px;
+    background: #e4eee6;
+    border: 1px solid #d4e3d8;
+    border-radius: 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 10px 0;
+}
+
+.visual-card {
+    text-align: center;
+    padding: 35px 25px;
+    max-width: 300px;
+}
+
+.map-icon {
+    display: inline-block;
+    color: #176b52;
+    font-size: 65px;
+    margin-bottom: 15px;
+}
+.visual-card h3{
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+.visual-card p{
+    color: #687b88;
+    font-size: 13px;
+}
