@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.A.F.E | Shelter Directory</title>
+    <link rel="stylesheet" href="SAFE.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <span class="logo-icon">🛡️</span>
+            <div>
+                <h2>S.A.F.E.</h2>
+                <p>SHELTER ALLOCATION</p>
+            </div>
+        </div>
+        <nav>
+            <a href="Index.html">Home</a>
+            <a href="shelters.html">Shelters</a>
+            <a href="Index.html#finder">Find Shelter</a>
+        </nav>
+    </header>
+    <main class="directory-page">
+        <section class="directory-heading">
+            <p class="section-tag">SHELTER DIRECTORY</p>
+            <h1>Find a safe place to stay.</h1>
+            <p>Browse available emergency and find one that meets your needs.</p>
+        </section>
+        <section class="shelter-search">
+            <input type="text" id="shelter-search" placeholder="Search by shelter name or city...">
+            <select id="facility-filter">
+                <option value="all">All facilities</option>
+                <option value="Medical Support">Medical Support</option>
+                <option value="Wheelchair Access">Wheelchair Access</option>
+                <option value="Food Services">Food Services</option>
+                <option value="Family Rooms">Family Rooms</option>
+            </select>
+            <select id="availability-filter">
+                <option value="all">All facilities</option>
+                <option value="available">Available spaces only</option>
+                <option value="high">10+ spaces available</option>
+            </select>
+        </section>
+        <div class="directory-results">
+            <p id="results-count">Loading shelters...</p>
+        </div>
+
+        <section class="directory-grid" id="shelter-list">
+            <!-- Shelter cards will be generated using JavaScript -->
+        </section>
+
+        <p id="no-results" class="no-results" hidden>
+            No shelters match your search. Try changing your filters.
+        </p>
+    </main>
+    <footer class="footer">
+        <p>© 2026 S.A.F.E. Shelter Allocation. Prototype project.</p>
+        <p>All shelter information displayed is fictional demo data.</p>
+    </footer>
+
+    <script src="script.js"></script>
+    
+</body>
+</html>

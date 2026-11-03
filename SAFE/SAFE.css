@@ -492,3 +492,311 @@ nav a:hover{
     font-weight: bold;
     text-decoration: none;
 }
+#signup-form{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+#signup-form label{
+font-size: 13px;
+    font-weight: bold;
+}
+#signup-form input{
+    width: 100%;
+    padding: 13px 14px;
+    background: white;
+    color: #172b3a;
+    border: 1px solid #d4e3d8;
+    border-radius: 7px;
+    font-size: 14px;
+}
+#signup-form input:focus{
+    outline: none;
+    border-color: #176b52;
+}
+#signup-form button{
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    margin-top: 12px;
+}
+
+.directory-page {
+    padding: 55px 7%;
+    min-height: 70vh;
+}
+
+.directory-heading {
+    margin-bottom: 35px;
+}
+
+.directory-heading h1 {
+    color: #172b3a;
+    font-size: 38px;
+    margin: 10px 0;
+}
+
+.directory-heading p {
+    color: #687b88;
+}
+
+.section-tag {
+    color: #176b52 !important;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+}
+
+.shelter-search {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.shelter-search input,
+.shelter-search select {
+    padding: 14px;
+    border: 1px solid #d4e3d8;
+    border-radius: 8px;
+    background: white;
+    color: #172b3a;
+    font-size: 14px;
+    min-width: 0;
+}
+
+.shelter-search input:focus,
+.shelter-search select:focus {
+    outline: none;
+    border-color: #176b52;
+}
+
+.directory-results {
+    margin: 20px 0;
+    color: #687b88;
+    font-size: 14px;
+}
+
+.directory-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+}
+
+.directory-card {
+    background: white;
+    border: 1px solid #e1eae4;
+    border-radius: 12px;
+    padding: 23px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+.directory-card h3 {
+    color: #172b3a;
+    margin-bottom: 8px;
+}
+
+.shelter-location {
+    color: #687b88;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.capacity-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 9px;
+    font-size: 13px;
+    color: #52636d;
+}
+
+.capacity-bar {
+    height: 8px;
+    background: #e8eee9;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 18px;
+}
+
+.capacity-fill {
+    height: 100%;
+    background: #176b52;
+    border-radius: 10px;
+}
+
+.facility-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 20px;
+}
+
+.facility-tag {
+    background: #eaf2ec;
+    color: #176b52;
+    padding: 6px 9px;
+    border-radius: 5px;
+    font-size: 11px;
+}
+
+.shelter-status {
+    font-size: 13px;
+    font-weight: bold;
+    color: #176b52;
+}
+
+.no-results {
+    text-align: center;
+    color: #687b88;
+    padding: 40px 0;
+}
+
+@media (max-width: 850px) {
+    .directory-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .shelter-search {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .shelter-search input {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 550px) {
+    .directory-grid,
+    .shelter-search {
+        grid-template-columns: 1fr;
+    }
+
+    .shelter-search input {
+        grid-column: auto;
+    }
+
+    .directory-heading h1 {
+        font-size: 30px;
+    }
+}
+
+
+/* SMART SHELTER FINDER */
+
+.finder-section {
+    padding: 65px 7%;
+    background: #e4eee6;
+}
+
+.finder-heading {
+    max-width: 650px;
+    margin-bottom: 35px;
+}
+
+.finder-heading h2 {
+    font-size: 32px;
+    color: #172b3a;
+    margin: 12px 0;
+}
+
+.finder-heading p {
+    color: #687b88;
+}
+
+.finder-form {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    max-width: 900px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-group > label:first-child {
+    font-weight: 600;
+    color: #172b3a;
+    font-size: 14px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"] {
+    padding: 13px;
+    border: 1px solid #d4e3d8;
+    border-radius: 7px;
+    font-size: 14px;
+}
+
+.facility-option {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 14px;
+    color: #52636d;
+}
+
+.facility-option input {
+    accent-color: #176b52;
+}
+
+.finder-form button {
+    grid-column: 1 / -1;
+    padding: 14px;
+    border: none;
+    cursor: pointer;
+}
+
+.finder-results {
+    max-width: 900px;
+    margin-top: 30px;
+}
+
+.finder-results h3 {
+    color: #172b3a;
+    margin-bottom: 15px;
+}
+
+.finder-result-card {
+    background: white;
+    padding: 20px;
+    border-radius: 9px;
+    margin-bottom: 12px;
+    border: 1px solid #d4e3d8;
+}
+
+.finder-result-card h4 {
+    color: #176b52;
+    margin-bottom: 8px;
+}
+
+.finder-result-card p {
+    color: #687b88;
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.finder-empty {
+    color: #687b88;
+    padding: 15px 0;
+}
+
+@media (max-width: 650px) {
+    .finder-form {
+        grid-template-columns: 1fr;
+        padding: 20px;
+    }
+
+    .finder-form button {
+        grid-column: auto;
+    }
+
+    .finder-heading h2 {
+        font-size: 26px;
+    }
+}

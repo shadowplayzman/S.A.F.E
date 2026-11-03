@@ -22,6 +22,7 @@
         </nav>
         <a href="#finder" class="nav-button">Find Safety</a>
     </header>
+    
     <main id="home">
         <section class="hero">
             <div class="hero-content">
@@ -149,7 +150,73 @@
         <button class="shelter-button">View details</button>
     </div>
 
-</div>
+    </div>
+    </section>
+    <!-- SMART SHELTER FINDER -->
+        <section class="finder-section" id="finder">
+
+            <div class="finder-heading">
+                <p class="section-tag">SMART SHELTER FINDER</p>
+                <h2>Find the right shelter for your needs.</h2>
+                <p>Enter your requirements to discover suitable shelters.</p>
+            </div>
+
+            <form id="finder-form" class="finder-form">
+
+                <div class="form-group">
+                    <label for="finder-city">Preferred city</label>
+                    <input type="text" id="finder-city"
+                        placeholder="e.g. Ludhiana" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="people-count">Number of people</label>
+                    <input type="number" id="people-count"
+                        min="1" value="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="minimum-spaces">Minimum available spaces</label>
+                    <input type="number" id="minimum-spaces"
+                        min="1" value="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Required facilities</label>
+
+                    <label class="facility-option">
+                        <input type="checkbox" name="facility"
+                            value="Medical Support">
+                        Medical Support
+                    </label>
+
+                    <label class="facility-option">
+                        <input type="checkbox" name="facility"
+                            value="Food Services">
+                        Food Services
+                    </label>
+
+                    <label class="facility-option">
+                        <input type="checkbox" name="facility"
+                            value="Wheelchair Access">
+                        Wheelchair Access
+                    </label>
+
+                    <label class="facility-option">
+                        <input type="checkbox" name="facility"
+                            value="Family Rooms">
+                        Family Rooms
+                    </label>
+                </div>
+
+                <button type="submit" class="primary-button">
+                    Find Suitable Shelters →
+                </button>
+
+            </form>
+
+            <div id="finder-results" class="finder-results"></div>
+
         </section>
     </main>
     <footer class="footer">
@@ -183,6 +250,6 @@
     </div>
 
 </footer>
-
+    <script src="script.js"></script>
 </body>
 </html>
