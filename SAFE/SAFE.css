@@ -416,3 +416,79 @@ nav a:hover{
         gap: 15px;
     }
 }
+.auth-section {
+    min-height: 85vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+.auth-card {
+    background: white;
+    width: 100%;
+    max-width: 430px;
+    padding: 40px;
+    border-radius: 14px;
+    border: 1px solid #e3eae7;
+    box-shadow: 0 8px 30px rgba(23, 43, 58, 0.06);
+}
+
+.auth-card h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.auth-card > p:not(.auth-switch) {
+    color: #687b88;
+    margin: 0 0 28px;
+}
+#login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#login-form label {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+#login-form input {
+    width: 100%;
+    padding: 13px 14px;
+    background-color: white;
+    color: #172b3a;
+    border: 1px solid #d4e3d8;
+    border-radius: 7px;
+    outline: none;
+    font-size: 14px;
+}
+
+#login-form input::placeholder {
+    color: #9aa8a2;
+}
+
+#login-form input:focus {
+    border-color: #176b52;
+    box-shadow: 0 0 0 3px rgba(23, 107, 82, 0.1);
+}
+
+#login-form button {
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    margin-top: 12px;
+}
+
+.auth-switch {
+    text-align: center;
+    font-size: 13px;
+    margin-top: 25px;
+}
+
+.auth-switch a {
+    color: #176b52;
+    font-weight: bold;
+    text-decoration: none;
+}
