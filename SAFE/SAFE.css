@@ -810,3 +810,83 @@ font-size: 13px;
 #finder-form input::placeholder {
     color: #9aa8a2;
 }
+
+.allocation-section {
+    padding: 55px 7%;
+    background: #f6f8f7;
+}
+
+.allocation-heading {
+    margin-bottom: 25px;
+}
+
+.allocation-heading h2 {
+    color: #172b3a;
+    font-size: 30px;
+    margin: 10px 0;
+}
+
+.allocation-heading p {
+    color: #687b88;
+}
+
+.allocation-form {
+    max-width: 650px;
+    background: white;
+    padding: 30px;
+    border: 1px solid #e3eae7;
+    border-radius: 12px;
+    display: grid;
+    gap: 18px;
+}
+
+.allocation-form input {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #d4e3d8;
+    border-radius: 7px;
+    background: white;
+    color: #172b3a;
+}
+
+.allocation-form input:focus {
+    outline: none;
+    border-color: #176b52;
+}
+
+#allocation-shelter-info {
+    color: #176b52;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.allocation-form button {
+    border: none;
+    cursor: pointer;
+}
+
+#allocation-message {
+    max-width: 650px;
+    margin-top: 20px;
+    color: #176b52;
+    line-height: 1.7;
+}
+
+#allocation-message:empty {
+    display: none;
+}
+
+.allocation-success {
+    background: white;
+    border: 1px solid #d4e3d8;
+    border-radius: 10px;
+    padding: 20px;
+}
+.directory-card .shelter-button {
+    margin-top: 10px;
+}
+
+.directory-card .shelter-button:disabled {
+    background: #aab8b0;
+    cursor: not-allowed;
+}
