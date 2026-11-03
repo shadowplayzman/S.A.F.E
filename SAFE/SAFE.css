@@ -800,3 +800,13 @@ font-size: 13px;
         font-size: 26px;
     }
 }
+#finder-form input[type="text"],
+#finder-form input[type="number"] {
+    background-color: white;
+    color: #172b3a;
+    border: 1px solid #d4e3d8;
+}
+
+#finder-form input::placeholder {
+    color: #9aa8a2;
+}
