@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.A.F.E. | User Dashboard</title>
+    <link rel="stylesheet" href="SAFE.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <span class="logo-icon">🛡️</span>
+            <div>
+                <h2>S.A.F.E.</h2>
+                <p>SHELTER ALLOCATION</p>
+            </div>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="shelters.html" class="nav-active">Shelter</a>
+            <a href="index.html#finder">Finder</a>
+            <a href="dashboard.html">Dashboard</a>
+        </nav>
+        <a href="login.html" class="nav-button">Account</a>
+    </header>
+    
+    <main class="dashboard-container">
+        <div class="welcome-header">
+            <p class="eyebrow">USER PORTAL</p>
+            <h1>My Allocation Requests</h1>
+            <p>Track the status of your emergency shelter allocation applications.</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📋</div>
+                <h3 id="stat-total">0</h3>
+                <p>Total Requests</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏳</div>
+                <h3 id="stat-pending">0</h3>
+                <p>Pending Review</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <h3 id="stat-approved">0</h3>
+                <p>Approved Requests</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">❌</div>
+                <h3 id="stat-rejected">0</h3>
+                <p>Rejected / Cancelled</p>
+            </div>
+        </div>
+
+        <h2 class="section-heading">Request History</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Shelter Name</th>
+                        <th>People</th>
+                        <th>Date Submitted</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="user-requests-tbody">
+                    <tr>
+                        <td colspan="6" class="table-loading">Loading your allocation requests...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-bottom">
+            <p>© 2026 S.A.F.E. | Demonstration Project</p>
+            <p>Demo shelter data only. Not an emergency response service.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

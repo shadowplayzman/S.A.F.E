@@ -783,3 +783,70 @@ if (allocationForm) {
     });
 
 }
+// ============================================
+// 9. USER DASHBOARD LOGIC
+// ============================================
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const tbody = document.getElementById('user-requests-tbody');
+    
+    // Only run on dashboard page
+    if (!tbody) return;
+
+    const requests = await SafeData.getRequests();
+
+    // Stats Elements
+    const statTotal = document.getElementById('stat-total');
+    const statPending = document.getElementById('stat-pending');
+    const statApproved = document.getElementById('stat-approved');
+    const statRejected = document.getElementById('stat-rejected');
+
+    // Helper to normalize status strings
+    const getNormalizedStatus = (status) => {
+        const s = (status || '').toLowerCase();
+        return s === 'submitted' ? 'pending' : s;
+    };
+
+    if (statTotal) statTotal.textContent = requests.length;
+    if (statPending) statPending.textContent = requests.filter(r => getNormalizedStatus(r.status) === 'pending').length;
+    if (statApproved) statApproved.textContent = requests.filter(r => getNormalizedStatus(r.status) === 'approved').length;
+    if (statRejected) statRejected.textContent = requests.filter(r => ['rejected', 'cancelled'].includes(getNormalizedStatus(r.status))).length;
+
+    if (!requests || requests.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="table-loading">No allocation requests submitted yet.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = requests.map(req => {
+        const shelterName = req.shelters ? req.shelters.name : (req.shelter_name || `Shelter #${req.shelter_id}`);
+        const formattedDate = req.created_at ? new Date(req.created_at).toLocaleDateString() : (req.date || 'N/A');
+        const reqId = req.id ? req.id.toString().slice(0, 8) : 'REQ';
+        const normalizedStatus = getNormalizedStatus(req.status);
+
+        return `
+            <tr>
+                <td><strong>${reqId}...</strong></td>
+                <td>${shelterName}</td>
+                <td>${req.people}</td>
+                <td>${formattedDate}</td>
+                <td><span class="badge badge-${normalizedStatus}">${normalizedStatus}</span></td>
+                <td>
+                    ${normalizedStatus === 'pending' ? 
+                        `<button class="btn-cancel" onclick="cancelRequest('${req.id}')">Cancel</button>` : 
+                        `<span class="action-disabled">None</span>`}
+                </td>
+            </tr>
+        `;
+    }).join('');
+});
+
+async function cancelRequest(id) {
+    if (confirm("Are you sure you want to cancel this pending request?")) {
+        const res = await SafeData.updateRequestStatus(id, 'cancelled');
+        if (res.success) {
+            location.reload();
+        } else {
+            alert("Failed to cancel request.");
+        }
+    }
+}
