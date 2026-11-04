@@ -1013,3 +1013,38 @@ th {
     color: #9ca3af;
     font-size: 0.85rem;
 }
+
+/* ==========================================
+   ADMIN DASHBOARD ACTIONS
+   ========================================== */
+
+.btn-approve {
+    background-color: #10b981;
+    color: #ffffff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    margin-right: 6px;
+    transition: background 0.2s;
+}
+
+.btn-approve:hover {
+    background-color: #059669;
+}
+
+.btn-reject {
+    background-color: #ef4444;
+    color: #ffffff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background 0.2s;
+}
+
+.btn-reject:hover {
+    background-color: #dc2626;
+}

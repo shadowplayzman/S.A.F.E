@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.A.F.E. | Admin Dashboard</title>
+    <link rel="stylesheet" href="SAFE.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <span class="logo-icon">🛡️</span>
+            <div>
+                <h2>S.A.F.E.</h2>
+                <p>ADMIN CONTROL PANEL</p>
+            </div>
+        </div>
+        <nav>
+            <a href="index.html">View Site</a>
+            <a href="shelters.html">Shelters</a>
+            <a href="dashboard.html">User Portal</a>
+            <a href="admin.html" class="nav-active">Admin Panel</a>
+        </nav>
+        <a href="login.html" class="nav-button">Account</a>
+    </header>
+
+    <main class="dashboard-container">
+        <div class="welcome-header">
+            <p class="eyebrow">ADMINISTRATIVE OVERVIEW</p>
+            <h1>Shelter Allocation Management</h1>
+            <p>Review incoming requests, manage allocation approvals, and monitor capacity.</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🏠</div>
+                <h3 id="admin-stat-shelters">0</h3>
+                <p>Total Shelters</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <h3 id="admin-stat-available">0</h3>
+                <p>Available Spaces</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📋</div>
+                <h3 id="admin-stat-requests">0</h3>
+                <p>Total Requests</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏳</div>
+                <h3 id="admin-stat-pending">0</h3>
+                <p>Pending Review</p>
+            </div>
+        </div>
+
+        <h2 class="section-heading">Allocation Requests</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Requester</th>
+                        <th>Email</th>
+                        <th>Shelter ID</th>
+                        <th>People</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-requests-tbody">
+                    <tr>
+                        <td colspan="7" class="table-loading">Loading allocation requests...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="section-heading">Managed Shelter Inventory</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Shelter Name</th>
+                        <th>City</th>
+                        <th>Total Capacity</th>
+                        <th>Available Spaces</th>
+                        <th>Facilities</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-shelters-tbody">
+                    <tr>
+                        <td colspan="6" class="table-loading">Loading shelter inventory...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-bottom">
+            <p>© 2026 S.A.F.E. | Administrative Portal</p>
+            <p>Authorized access only.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

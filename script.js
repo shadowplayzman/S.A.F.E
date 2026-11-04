@@ -1,8 +1,6 @@
-
 // ============================================
 // S.A.F.E. - SHELTER ALLOCATION SYSTEM
 // ============================================
-
 
 // ============================================
 // 1. SHELTER DATA
@@ -63,64 +61,61 @@ const shelters = [
     }
 ];
 
-
 // ============================================
 // 2. LOCAL STORAGE
 // ============================================
 
 function loadAvailability() {
+    const raw = localStorage.getItem("safeShelterAvailability");
+    if (!raw) return;
 
-    const saved = JSON.parse(
-        localStorage.getItem("safeShelterAvailability") || "{}"
-    );
-
-    shelters.forEach(shelter => {
-
-        if (saved[shelter.id] !== undefined) {
-            shelter.available = saved[shelter.id];
+    try {
+        const saved = JSON.parse(raw);
+        if (Array.isArray(saved)) {
+            shelters.forEach(shelter => {
+                const match = saved.find(s => Number(s.id) === Number(shelter.id));
+                if (match && typeof match.available === 'number') {
+                    shelter.available = match.available;
+                }
+            });
+        } else if (typeof saved === 'object') {
+            shelters.forEach(shelter => {
+                if (typeof saved[shelter.id] === 'number') {
+                    shelter.available = saved[shelter.id];
+                }
+            });
         }
-
-    });
-
+    } catch (e) {
+        console.error("Error loading availability:", e);
+    }
 }
 
-
 function saveAvailability() {
-
     const availability = {};
-
     shelters.forEach(shelter => {
         availability[shelter.id] = shelter.available;
     });
-
     localStorage.setItem(
         "safeShelterAvailability",
         JSON.stringify(availability)
     );
-
 }
 
-
 function getRequests() {
-
     return JSON.parse(
         localStorage.getItem("safeAllocationRequests") || "[]"
     );
-
 }
 
-
 loadAvailability();
-
 
 // ============================================
 // 3. SHELTER DETAILS
 // ============================================
 
 function viewShelter(shelterId) {
-
     const shelter = shelters.find(
-        item => item.id === shelterId
+        item => Number(item.id) === Number(shelterId)
     );
 
     if (!shelter) return;
@@ -133,72 +128,58 @@ function viewShelter(shelterId) {
         `Total capacity: ${shelter.capacity}\n` +
         `Facilities: ${shelter.facilities.join(", ")}`
     );
-
 }
-
 
 // ============================================
 // 4. ALLOCATION FORM REFERENCES
 // ============================================
 
-const allocationSection =
-    document.getElementById("allocation-section");
-
-const allocationForm =
-    document.getElementById("allocation-form");
-
-const allocationMessage =
-    document.getElementById("allocation-message");
-
+const allocationSection = document.getElementById("allocation-section");
+const allocationForm = document.getElementById("allocation-form");
+const allocationMessage = document.getElementById("allocation-message");
 
 // ============================================
-// 5. OPEN ALLOCATION FORM
+// 5. OPEN ALLOCATION FORM (WITH AUTO-REDIRECT)
 // ============================================
 
 function openAllocationForm(shelterId) {
-
-    const shelter = shelters.find(
-        item => item.id === shelterId
-    );
+    const shelter = shelters.find(item => Number(item.id) === Number(shelterId));
 
     if (!shelter) return;
 
-    if (!allocationSection || !allocationForm) {
-
-        alert(
-            "The allocation form is not available on this page."
-        );
-
-        return;
-
-    }
-
     if (shelter.available <= 0) {
-
         alert("This shelter currently has no available spaces.");
-
         return;
-
     }
 
-    document.getElementById("selected-shelter-id").value =
-        shelter.id;
+    // If allocation form isn't on the current page (e.g. shelters.html), redirect to index.html
+    if (!allocationSection || !allocationForm) {
+        sessionStorage.setItem("selectedShelterId", shelterId);
+        window.location.href = `index.html?shelterId=${shelterId}#allocation-section`;
+        return;
+    }
 
-    document.getElementById("allocation-shelter-info").textContent =
-        `${shelter.name} | ${shelter.available} spaces available`;
+    const shelterIdInput = document.getElementById("selected-shelter-id");
+    const shelterInfoEl = document.getElementById("allocation-shelter-info");
+    const peopleInput = document.getElementById("allocation-people");
 
-    document.getElementById("allocation-people").value = 1;
+    if (shelterIdInput) shelterIdInput.value = shelter.id;
 
-    allocationMessage.innerHTML = "";
+    if (shelterInfoEl) {
+        shelterInfoEl.innerHTML = `
+            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                <strong>Selected Shelter:</strong> ${shelter.name} (${shelter.city})<br>
+                <small>Available Spaces: ${shelter.available} / ${shelter.capacity}</small>
+            </div>
+        `;
+    }
+
+    if (peopleInput) peopleInput.value = 1;
+    if (allocationMessage) allocationMessage.innerHTML = "";
 
     allocationSection.hidden = false;
-
-    allocationSection.scrollIntoView({
-        behavior: "smooth"
-    });
-
+    allocationSection.scrollIntoView({ behavior: "smooth" });
 }
-
 
 // ============================================
 // 6. SHELTER DIRECTORY
@@ -207,35 +188,18 @@ function openAllocationForm(shelterId) {
 const shelterList = document.getElementById("shelter-list");
 
 if (shelterList) {
-
-    const searchInput =
-        document.getElementById("shelter-search");
-
-    const facilityFilter =
-        document.getElementById("facility-filter");
-
-    const availabilityFilter =
-        document.getElementById("availability-filter");
-
-    const resultsCount =
-        document.getElementById("results-count");
-
-    const noResults =
-        document.getElementById("no-results");
-
+    const searchInput = document.getElementById("shelter-search");
+    const facilityFilter = document.getElementById("facility-filter");
+    const availabilityFilter = document.getElementById("availability-filter");
+    const resultsCount = document.getElementById("results-count");
+    const noResults = document.getElementById("no-results");
 
     function displayShelters() {
-
-        const searchText =
-            searchInput.value.trim().toLowerCase();
-
-        const selectedFacility = facilityFilter.value;
-
-        const selectedAvailability = availabilityFilter.value;
-
+        const searchText = searchInput ? searchInput.value.trim().toLowerCase() : "";
+        const selectedFacility = facilityFilter ? facilityFilter.value : "all";
+        const selectedAvailability = availabilityFilter ? availabilityFilter.value : "all";
 
         const filteredShelters = shelters.filter(shelter => {
-
             const matchesSearch =
                 shelter.name.toLowerCase().includes(searchText) ||
                 shelter.city.toLowerCase().includes(searchText);
@@ -248,141 +212,84 @@ if (shelterList) {
 
             if (selectedAvailability === "available") {
                 matchesAvailability = shelter.available > 0;
-            }
-
-            else if (selectedAvailability === "high") {
+            } else if (selectedAvailability === "high") {
                 matchesAvailability = shelter.available >= 10;
             }
 
-            return matchesSearch &&
-                   matchesFacility &&
-                   matchesAvailability;
-
+            return matchesSearch && matchesFacility && matchesAvailability;
         });
 
-
         shelterList.innerHTML = "";
-
-        resultsCount.textContent =
-            `${filteredShelters.length} shelters found`;
-
-        noResults.hidden =
-            filteredShelters.length !== 0;
-
+        if (resultsCount) resultsCount.textContent = `${filteredShelters.length} shelters found`;
+        if (noResults) noResults.hidden = filteredShelters.length !== 0;
 
         filteredShelters.forEach(shelter => {
-
-            const percentage =
-                (shelter.available / shelter.capacity) * 100;
-
-
+            const percentage = (shelter.available / shelter.capacity) * 100;
             const card = document.createElement("article");
-
             card.className = "directory-card";
 
-
             const name = document.createElement("h3");
-
             name.textContent = shelter.name;
 
-
             const location = document.createElement("p");
-
             location.className = "shelter-location";
-
             location.textContent = shelter.city;
 
-
             const capacityInfo = document.createElement("div");
-
             capacityInfo.className = "capacity-info";
 
-
             const capacityLabel = document.createElement("span");
-
             capacityLabel.textContent = "Available spaces";
 
-
             const capacityValue = document.createElement("strong");
-
-            capacityValue.textContent =
-                `${shelter.available}/${shelter.capacity}`;
-
+            capacityValue.textContent = `${shelter.available}/${shelter.capacity}`;
 
             capacityInfo.append(capacityLabel, capacityValue);
 
-
             const capacityBar = document.createElement("div");
-
             capacityBar.className = "capacity-bar";
 
-
             const capacityFill = document.createElement("div");
-
             capacityFill.className = "capacity-fill";
-
             capacityFill.style.width = `${percentage}%`;
-
 
             capacityBar.appendChild(capacityFill);
 
-
             const facilityList = document.createElement("div");
-
             facilityList.className = "facility-list";
 
-
             shelter.facilities.forEach(facility => {
-
                 const tag = document.createElement("span");
-
                 tag.className = "facility-tag";
-
                 tag.textContent = facility;
-
                 facilityList.appendChild(tag);
-
             });
 
-
             const status = document.createElement("p");
-
             status.className = "shelter-status";
-
             status.textContent = shelter.available > 0
                 ? "● Spaces available"
                 : "● Currently full";
 
-
             // VIEW DETAILS BUTTON
-
             const detailsButton = document.createElement("button");
-
             detailsButton.className = "shelter-button";
-
             detailsButton.textContent = "View Details";
-
             detailsButton.addEventListener("click", () => {
                 viewShelter(shelter.id);
             });
 
-
             // REQUEST ALLOCATION BUTTON
-
             const requestButton = document.createElement("button");
-
             requestButton.className = "shelter-button";
-
             requestButton.textContent = shelter.available > 0
                 ? "Request Allocation"
                 : "Currently Full";
 
             requestButton.disabled = shelter.available <= 0;
-
             requestButton.addEventListener("click", () => {
                 openAllocationForm(shelter.id);
             });
-
 
             card.append(
                 name,
@@ -395,25 +302,16 @@ if (shelterList) {
                 requestButton
             );
 
-
             shelterList.appendChild(card);
-
         });
-
     }
 
-
-    searchInput.addEventListener("input", displayShelters);
-
-    facilityFilter.addEventListener("change", displayShelters);
-
-    availabilityFilter.addEventListener("change", displayShelters);
-
+    if (searchInput) searchInput.addEventListener("input", displayShelters);
+    if (facilityFilter) facilityFilter.addEventListener("change", displayShelters);
+    if (availabilityFilter) availabilityFilter.addEventListener("change", displayShelters);
 
     displayShelters();
-
 }
-
 
 // ============================================
 // 7. SMART SHELTER FINDER
@@ -422,27 +320,21 @@ if (shelterList) {
 const finderForm = document.getElementById("finder-form");
 
 if (finderForm) {
-
     finderForm.addEventListener("submit", function(event) {
-
         event.preventDefault();
-
 
         const city = document
             .getElementById("finder-city")
             .value.trim()
             .toLowerCase();
 
-
         const people = Number(
             document.getElementById("people-count").value
         );
 
-
         const minimumSpaces = Number(
             document.getElementById("minimum-spaces").value
         );
-
 
         const requiredFacilities = Array.from(
             document.querySelectorAll(
@@ -450,13 +342,9 @@ if (finderForm) {
             )
         ).map(input => input.value);
 
-
-        const resultsContainer =
-            document.getElementById("finder-results");
-
+        const resultsContainer = document.getElementById("finder-results");
 
         // VALIDATION
-
         if (
             !city ||
             !Number.isInteger(people) ||
@@ -464,107 +352,58 @@ if (finderForm) {
             people < 1 ||
             minimumSpaces < 1
         ) {
-
             alert("Please enter valid city and capacity details.");
-
             return;
-
         }
 
-
         // MATCHING ALGORITHM
-
         const matches = shelters.filter(shelter => {
+            const cityMatch = shelter.city.toLowerCase().includes(city);
+            const capacityMatch = shelter.available >= people;
+            const availabilityMatch = shelter.available >= minimumSpaces;
+            const facilityMatch = requiredFacilities.every(facility =>
+                shelter.facilities.includes(facility)
+            );
 
-            const cityMatch =
-                shelter.city.toLowerCase().includes(city);
-
-            const capacityMatch =
-                shelter.available >= people;
-
-            const availabilityMatch =
-                shelter.available >= minimumSpaces;
-
-            const facilityMatch =
-                requiredFacilities.every(facility =>
-                    shelter.facilities.includes(facility)
-                );
-
-
-            return cityMatch &&
-                   capacityMatch &&
-                   availabilityMatch &&
-                   facilityMatch;
-
+            return cityMatch && capacityMatch && availabilityMatch && facilityMatch;
         });
-
 
         resultsContainer.innerHTML = "";
 
-
         const heading = document.createElement("h3");
-
-        heading.textContent =
-            `${matches.length} suitable shelter(s) found`;
-
+        heading.textContent = `${matches.length} suitable shelter(s) found`;
         resultsContainer.appendChild(heading);
 
-
         if (matches.length === 0) {
-
             const message = document.createElement("p");
-
             message.className = "finder-empty";
-
-            message.textContent =
-                "No shelters match your requirements. Try changing your search criteria.";
-
+            message.textContent = "No shelters match your requirements. Try changing your search criteria.";
             resultsContainer.appendChild(message);
-
             return;
-
         }
 
-
         matches.forEach(shelter => {
-
             const card = document.createElement("div");
-
             card.className = "finder-result-card";
 
-
             const name = document.createElement("h4");
-
             name.textContent = shelter.name;
 
-
             const location = document.createElement("p");
-
             location.textContent = `Location: ${shelter.city}`;
 
-
             const spaces = document.createElement("p");
-
-            spaces.textContent =
-                `Available spaces: ${shelter.available}`;
-
+            spaces.textContent = `Available spaces: ${shelter.available}`;
 
             const facilities = document.createElement("p");
-
-            facilities.textContent =
-                `Facilities: ${shelter.facilities.join(", ")}`;
-
+            facilities.textContent = `Facilities: ${shelter.facilities.join(", ")}`;
 
             const requestButton = document.createElement("button");
-
             requestButton.className = "shelter-button";
-
             requestButton.textContent = "Request Allocation";
-
             requestButton.addEventListener("click", () => {
                 openAllocationForm(shelter.id);
             });
-
 
             card.append(
                 name,
@@ -574,215 +413,100 @@ if (finderForm) {
                 requestButton
             );
 
-
             resultsContainer.appendChild(card);
-
         });
-
     });
-
 }
 
-
 // ============================================
-// 8. SUBMIT ALLOCATION REQUEST
+// 8. SUBMIT ALLOCATION REQUEST (SAFEDATA INTEGRATION)
 // ============================================
 
 if (allocationForm) {
-
-    allocationForm.addEventListener("submit", function(event) {
-
+    allocationForm.addEventListener("submit", async function(event) {
         event.preventDefault();
 
+        const nameInput = document.getElementById("allocation-name");
+        const emailInput = document.getElementById("allocation-email");
+        const peopleInput = document.getElementById("allocation-people");
+        const shelterIdInput = document.getElementById("selected-shelter-id");
+        const shelterInfoEl = document.getElementById("allocation-shelter-info");
 
-        const name = document
-            .getElementById("allocation-name")
-            .value.trim();
-
-
-        const email = document
-            .getElementById("allocation-email")
-            .value.trim();
-
-
-        const people = Number(
-            document.getElementById("allocation-people").value
-        );
-
-
-        const shelterId = Number(
-            document.getElementById("selected-shelter-id").value
-        );
-
-
-        const shelter = shelters.find(
-            item => item.id === shelterId
-        );
-
+        const name = nameInput ? nameInput.value.trim() : "";
+        const email = emailInput ? emailInput.value.trim() : "";
+        const people = peopleInput ? parseInt(peopleInput.value, 10) : 0;
+        const shelterId = shelterIdInput && shelterIdInput.value ? Number(shelterIdInput.value) : null;
 
         // VALIDATION
-
-        if (
-            !name ||
-            !email ||
-            !Number.isInteger(people) ||
-            people < 1
-        ) {
-
-            alert("Please enter valid allocation details.");
-
+        if (!name || !email || isNaN(people) || people < 1 || !shelterId) {
+            alert("Please select a shelter and enter valid allocation details.");
             return;
-
         }
 
-
+        const shelter = shelters.find(item => Number(item.id) === Number(shelterId));
         if (!shelter) {
-
             alert("Please select a valid shelter.");
-
             return;
-
         }
-
-
-        // CHECK CAPACITY
 
         if (people > shelter.available) {
-
-            alert(
-                `Only ${shelter.available} spaces are currently available.`
-            );
-
+            alert(`Only ${shelter.available} spaces are currently available.`);
             return;
-
         }
 
+        const submitBtn = allocationForm.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Submitting...";
+        }
 
-        // GENERATE UNIQUE REQUEST ID
+        try {
+            // SAVE REQUEST VIA SAFEDATA (SUPABASE / LOCAL STORAGE)
+            const response = await SafeData.createRequest({
+                shelterId: shelter.id,
+                shelterName: shelter.name,
+                name: name,
+                email: email,
+                people: people
+            });
 
-        const requestId =
-            "SAFE-" + Date.now().toString().slice(-8);
+            if (allocationMessage) allocationMessage.innerHTML = "";
 
+            if (response.success) {
+                const reqId = response.data && response.data.id ? response.data.id.toString().slice(0, 8) : 'REQ';
 
-        // CREATE REQUEST
+                const successCard = document.createElement("div");
+                successCard.className = "allocation-success";
 
-        const request = {
+                const heading = document.createElement("h3");
+                heading.textContent = "Request submitted successfully!";
 
-            id: requestId,
+                const details = document.createElement("p");
+                details.textContent = `Request ID: ${reqId}... | Shelter: ${shelter.name} | People: ${people} | Status: Pending Review`;
 
-            name: name,
+                const disclaimer = document.createElement("p");
+                disclaimer.textContent = "Your request is pending administrative review and approval.";
 
-            email: email,
+                successCard.append(heading, details, disclaimer);
+                if (allocationMessage) allocationMessage.appendChild(successCard);
 
-            people: people,
-
-            shelterId: shelter.id,
-
-            shelterName: shelter.name,
-
-            city: shelter.city,
-
-            status: "Submitted",
-
-            date: new Date().toLocaleString()
-
-        };
-
-
-        // SAVE REQUEST
-
-        const existingRequests = getRequests();
-
-        existingRequests.push(request);
-
-        localStorage.setItem(
-            "safeAllocationRequests",
-            JSON.stringify(existingRequests)
-        );
-
-
-        // UPDATE AVAILABILITY
-
-        shelter.available -= people;
-
-        saveAvailability();
-
-
-        // CONFIRMATION MESSAGE
-
-        allocationMessage.innerHTML = "";
-
-
-        const successCard = document.createElement("div");
-
-        successCard.className = "allocation-success";
-
-
-        const heading = document.createElement("h3");
-
-        heading.textContent =
-            "Request submitted successfully!";
-
-
-        const details = document.createElement("p");
-
-        details.textContent =
-            `Request ID: ${requestId} | ` +
-            `Shelter: ${shelter.name} | ` +
-            `People: ${people} | ` +
-            `Status: Submitted`;
-
-
-        const disclaimer = document.createElement("p");
-
-        disclaimer.textContent =
-            "This is a demonstration request, not a confirmed shelter reservation.";
-
-
-        successCard.append(
-            heading,
-            details,
-            disclaimer
-        );
-
-        allocationMessage.appendChild(successCard);
-
-
-        allocationForm.reset();
-
-
-        document.getElementById("allocation-shelter-info")
-            .textContent = "Request submitted.";
-
-
-        // REFRESH DIRECTORY IF PRESENT
-
-        if (shelterList) {
-
-            if (typeof displayShelters === "function") {
-                displayShelters();
+                allocationForm.reset();
+                if (shelterInfoEl) shelterInfoEl.textContent = "Request submitted.";
+            } else {
+                alert("Error submitting request: " + (response.message || "Unknown error"));
             }
-
-            else {
-                location.reload();
+        } catch (err) {
+            console.error("Submission error:", err);
+            alert("Failed to submit request: " + err.message);
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Submit Allocation Request →";
             }
-
         }
-
-
-        // REFRESH FINDER RESULTS IF PRESENT
-
-        if (finderForm) {
-
-            finderForm.dispatchEvent(
-                new Event("submit", { cancelable: true })
-            );
-
-        }
-
     });
-
 }
+
 // ============================================
 // 9. USER DASHBOARD LOGIC
 // ============================================
@@ -818,7 +542,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     tbody.innerHTML = requests.map(req => {
-        const shelterName = req.shelters ? req.shelters.name : (req.shelter_name || `Shelter #${req.shelter_id}`);
+        const shelterName = req.shelters ? req.shelters.name : (req.shelter_name || `Shelter #${req.shelter_id || req.shelterId}`);
         const formattedDate = req.created_at ? new Date(req.created_at).toLocaleDateString() : (req.date || 'N/A');
         const reqId = req.id ? req.id.toString().slice(0, 8) : 'REQ';
         const normalizedStatus = getNormalizedStatus(req.status);
@@ -849,4 +573,127 @@ async function cancelRequest(id) {
             alert("Failed to cancel request.");
         }
     }
+}
+
+// ============================================
+// 10. ADMIN DASHBOARD LOGIC
+// ============================================
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const adminReqTbody = document.getElementById('admin-requests-tbody');
+    const adminShelterTbody = document.getElementById('admin-shelters-tbody');
+
+    // Only run if on admin page
+    if (!adminReqTbody || !adminShelterTbody) return;
+
+    loadAdminDashboard();
+});
+
+async function loadAdminDashboard() {
+    const adminReqTbody = document.getElementById('admin-requests-tbody');
+    const adminShelterTbody = document.getElementById('admin-shelters-tbody');
+    
+    if (!adminReqTbody || !adminShelterTbody) return;
+
+    const sheltersData = await SafeData.getShelters();
+    const requests = await SafeData.getRequests();
+
+    const getNormalizedStatus = (status) => {
+        const s = (status || '').toLowerCase();
+        return s === 'submitted' ? 'pending' : s;
+    };
+
+    // Update Overview Stats
+    const totalSheltersEl = document.getElementById('admin-stat-shelters');
+    const availSpacesEl = document.getElementById('admin-stat-available');
+    const totalReqsEl = document.getElementById('admin-stat-requests');
+    const pendingReqsEl = document.getElementById('admin-stat-pending');
+
+    if (totalSheltersEl) totalSheltersEl.textContent = sheltersData.length;
+    if (availSpacesEl) availSpacesEl.textContent = sheltersData.reduce((acc, s) => acc + Number(s.available || 0), 0);
+    if (totalReqsEl) totalReqsEl.textContent = requests.length;
+    if (pendingReqsEl) pendingReqsEl.textContent = requests.filter(r => getNormalizedStatus(r.status) === 'pending').length;
+
+    // Render Requests Table
+    if (!requests || requests.length === 0) {
+        adminReqTbody.innerHTML = `<tr><td colspan="7" class="table-loading">No allocation requests found.</td></tr>`;
+    } else {
+        adminReqTbody.innerHTML = requests.map(req => {
+            const reqId = req.id ? req.id.toString().slice(0, 8) : 'REQ';
+            const normalizedStatus = getNormalizedStatus(req.status);
+
+            return `
+                <tr>
+                    <td><strong>${reqId}...</strong></td>
+                    <td>${req.requester_name || req.name || 'N/A'}</td>
+                    <td>${req.requester_email || req.email || 'N/A'}</td>
+                    <td>${req.shelter_id || req.shelterId}</td>
+                    <td><strong>${req.people}</strong></td>
+                    <td><span class="badge badge-${normalizedStatus}">${normalizedStatus}</span></td>
+                    <td>
+                        ${normalizedStatus === 'pending' ? `
+                            <button class="btn-approve" onclick="handleApprove('${req.id}', ${req.shelter_id || req.shelterId}, ${req.people})">Approve</button>
+                            <button class="btn-reject" onclick="handleReject('${req.id}')">Reject</button>
+                        ` : `<span class="action-disabled">Completed</span>`}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // Render Shelters Table
+    adminShelterTbody.innerHTML = sheltersData.map(s => {
+        const facilitiesText = Array.isArray(s.facilities) ? s.facilities.join(', ') : s.facilities;
+        return `
+            <tr>
+                <td>#${s.id}</td>
+                <td><strong>${s.name}</strong></td>
+                <td>${s.city}</td>
+                <td>${s.capacity}</td>
+                <td><strong style="color: #176b52;">${s.available}</strong></td>
+                <td>${facilitiesText}</td>
+            </tr>
+        `;
+    }).join('');
+}
+
+async function handleApprove(requestId, shelterId, people) {
+    if (confirm("Approve this allocation request and deduct shelter capacity?")) {
+        const res = await SafeData.approveRequest(requestId, shelterId, people);
+        if (res.success) {
+            alert(res.message || "Request approved successfully!");
+            loadAdminDashboard();
+        } else {
+            alert("Approval failed: " + res.message);
+        }
+    }
+}
+
+async function handleReject(requestId) {
+    if (confirm("Reject this allocation request?")) {
+        const res = await SafeData.updateRequestStatus(requestId, 'rejected');
+        if (res.success) {
+            loadAdminDashboard();
+        } else {
+            alert("Failed to reject request.");
+        }
+    }
+}
+
+// ============================================
+// 11. AUTO-SELECT SHELTER ON PAGE LOAD & HELPERS
+// ============================================
+
+document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    let shelterId = urlParams.get("shelterId") || sessionStorage.getItem("selectedShelterId");
+
+    if (shelterId) {
+        openAllocationForm(shelterId);
+        sessionStorage.removeItem("selectedShelterId");
+    }
+});
+
+function handleShelterClick(shelterId) {
+    openAllocationForm(shelterId);
 }

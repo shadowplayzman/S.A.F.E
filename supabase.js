@@ -2,15 +2,13 @@
    S.A.F.E. - Supabase & Data Persistence Layer
    ========================================== */
 
-// Configurable Supabase credentials
-// Replace these values with your Project URL and Anon Key from your Supabase Dashboard Settings -> API
-const SUPABASE_URL = 'https://YOUR_SUPABASE_PROJECT_ID.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const SUPABASE_URL = 'https://nubddxxggdrduiwbrich.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_zwd1mCNXQXDz-Hxye_u9sw_GMy3kqXu';
 
 let supabaseClient = null;
 
-// Initialize Supabase if the library is loaded and URL is set
-if (typeof supabase !== 'undefined' && !SUPABASE_URL.includes('YOUR_SUPABASE_PROJECT_ID')) {
+// Initialize Supabase if CDN library is loaded
+if (typeof supabase !== 'undefined' && SUPABASE_URL && !SUPABASE_URL.includes('YOUR_SUPABASE_PROJECT_ID')) {
     supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
@@ -32,7 +30,6 @@ const SafeData = {
             const { data, error } = await supabaseClient.from('shelters').select('*').order('id', { ascending: true });
             if (!error && data && data.length > 0) return data;
         }
-        // Fallback to Local Storage or default array
         const local = localStorage.getItem('safeShelterAvailability');
         return local ? JSON.parse(local) : this.defaultShelters;
     },
@@ -40,10 +37,20 @@ const SafeData = {
     // GET ALLOCATION REQUESTS
     async getRequests(userId = null) {
         if (supabaseClient) {
+            // Try query with shelters join first
             let query = supabaseClient.from('allocation_requests').select('*, shelters(name, city)');
             if (userId) query = query.eq('user_id', userId);
-            const { data, error } = await query.order('created_at', { ascending: false });
-            if (!error && data) return data;
+            let { data, error } = await query.order('created_at', { ascending: false });
+            
+            // If join query fails (e.g. no foreign key constraint), fallback to direct table select
+            if (error) {
+                let simpleQuery = supabaseClient.from('allocation_requests').select('*');
+                if (userId) simpleQuery = simpleQuery.eq('user_id', userId);
+                const simpleRes = await simpleQuery.order('created_at', { ascending: false });
+                if (!simpleRes.error && simpleRes.data) return simpleRes.data;
+            } else if (data) {
+                return data;
+            }
         }
         // Local Storage Fallback
         const local = localStorage.getItem('safeAllocationRequests');
@@ -63,8 +70,8 @@ const SafeData = {
                 people: requestData.people,
                 status: 'pending'
             }]).select();
-            if (!error) return { success: true, data: data[0] };
-            return { success: false, message: error.message };
+            if (!error && data && data.length > 0) return { success: true, data: data[0] };
+            return { success: false, message: error ? error.message : "Failed to insert request" };
         }
 
         // Local Storage Fallback
@@ -85,7 +92,7 @@ const SafeData = {
         return { success: true, data: newReq };
     },
 
-    // APPROVE REQUEST (Executes atomic stored procedure in Supabase or fallback)
+    // APPROVE REQUEST
     async approveRequest(requestId, shelterId, peopleCount) {
         if (supabaseClient) {
             const { data, error } = await supabaseClient.rpc('approve_allocation_request', { target_request_id: requestId });
@@ -93,7 +100,6 @@ const SafeData = {
             return { success: false, message: error.message };
         }
 
-        // Fallback Logic
         const shelters = await this.getShelters();
         const shelter = shelters.find(s => s.id == shelterId);
         if (!shelter || shelter.available < peopleCount) {
@@ -128,3 +134,6 @@ const SafeData = {
         return { success: false };
     }
 };
+
+// Explicitly attach to window object to guarantee global availability
+window.SafeData = SafeData;
