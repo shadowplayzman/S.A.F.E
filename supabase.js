@@ -21,7 +21,7 @@ const SafeData = {
         { id: 6, name: "Central Relief Facility", city: "Amritsar", capacity: 150, available: 65, facilities: ["Food Services", "Medical Support", "Family Rooms"] }
     ],
 
-    // AUTH METHODS
+    // AUTH METHODS (UPDATED)
     async signUp(email, password, name) {
         if (supabaseClient) {
             const { data, error } = await supabaseClient.auth.signUp({
@@ -29,8 +29,20 @@ const SafeData = {
                 password: password,
                 options: { data: { full_name: name } }
             });
-            if (!error && data.user) return { success: true, user: data.user };
-            return { success: false, message: error ? error.message : "Sign up failed." };
+
+            if (error) {
+                return { success: false, message: error.message };
+            }
+
+            if (data.user) {
+                const sessionUser = {
+                    id: data.user.id,
+                    email: data.user.email,
+                    name: name
+                };
+                localStorage.setItem('safeSessionUser', JSON.stringify(sessionUser));
+                return { success: true, user: data.user };
+            }
         }
         // Local storage fallback
         const demoUser = { id: 'usr_' + Date.now(), email, name };
@@ -44,15 +56,30 @@ const SafeData = {
                 email: email,
                 password: password
             });
-            if (!error && data.user) return { success: true, user: data.user };
-            return { success: false, message: error ? error.message : "Invalid credentials." };
-        }
-        // Local storage fallback
-        const demoUser = { id: 'usr_demo', email, name: email.split('@')[0] };
-        localStorage.setItem('safeSessionUser', JSON.stringify(demoUser));
-        return { success: true, user: demoUser };
-    },
 
+            if (error) {
+                return { success: false, message: error.message };
+            }
+
+            if (data.user) {
+                const fullName = data.user.user_metadata?.full_name || email.split('@')[0];
+                const sessionUser = {
+                    id: data.user.id,
+                    email: data.user.email,
+                    name: fullName
+                };
+                localStorage.setItem('safeSessionUser', JSON.stringify(sessionUser));
+                return { success: true, user: data.user };
+            }
+        }
+        
+        const local = localStorage.getItem('safeSessionUser');
+        if (local) {
+            const parsed = JSON.parse(local);
+            if (parsed.email === email) return { success: true, user: parsed };
+        }
+        return { success: false, message: "Invalid email or password." };
+    },
     async signOut() {
         if (supabaseClient) {
             await supabaseClient.auth.signOut();
