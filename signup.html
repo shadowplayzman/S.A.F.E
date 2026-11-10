@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S.A.F.E. | Sign Up</title>
+    <title>S.A.F.E | Sign Up</title>
     <link rel="stylesheet" href="SAFE.css">
 </head>
 <body>
@@ -11,36 +11,50 @@
         <div class="logo">
             <span class="logo-icon">🛡️</span>
             <div>
-                <h2>S.A.F.E.</h2>
+                <h2>S.A.F.E</h2>
                 <p>SHELTER ALLOCATION</p>
             </div>
         </div>
-        <a href="index.html" class="secondary-link">Back to Home</a>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="shelters.html">Shelters</a>
+            <a href="index.html#finder">Finder</a>
+            <a href="dashboard.html">Dashboard</a>
+        </nav>
     </header>
-    <main class="auth-section">
-        <div class="auth-card">
-            <h1>Create account</h1>
-            <p>Join S.A.F.E. to find suitable shelters.</p>
+
+    <main style="max-width: 450px; margin: 60px auto; padding: 20px;">
+        <div style="background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+            <h2 style="margin-bottom: 8px;">Create an Account</h2>
+            <p style="color: #666; margin-bottom: 24px;">Join the S.A.F.E emergency shelter network.</p>
+
             <form id="signup-form">
-                <label for="name">Full name</label>
-                <input type="text" id="name" placeholder="Enter your name" required>
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label for="signup-name">Full Name</label>
+                    <input type="text" id="signup-name" placeholder="John Doe" required style="width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #ccc; border-radius: 6px;">
+                </div>
 
-                <label for="signup-email">Email address</label>
-                <input type="email" id="signup-email" placeholder="Enter your email" required>
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label for="signup-email">Email Address</label>
+                    <input type="email" id="signup-email" placeholder="name@example.com" required style="width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #ccc; border-radius: 6px;">
+                </div>
 
-                <label for="signup-password">Password</label>
-                <input type="password" id="signup-password" placeholder="Create a password" minlength="6" required>
+                <div class="form-group" style="margin-bottom: 24px;">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" placeholder="••••••••" required style="width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #ccc; border-radius: 6px;">
+                </div>
 
-                <label for="confirm-password">Confirm password</label>
-                <input type="password" id="confirm-password" placeholder="Confirm your password" required>
-                <button type="submit" class="primary-button">Create account →</button>
+                <button type="submit" class="primary-button" style="width: 100%; padding: 12px;">Create Account →</button>
             </form>
-            <p class="auth-switch">
-                Already have an account?
-                <a href="login.html">Login</a>
+
+            <p style="text-align: center; margin-top: 20px; color: #666;">
+                Already have an account? <a href="login.html" style="color: #10b981; font-weight: bold;">Log in</a>
             </p>
         </div>
     </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -697,3 +697,82 @@ document.addEventListener("DOMContentLoaded", function () {
 function handleShelterClick(shelterId) {
     openAllocationForm(shelterId);
 }
+// ============================================
+// 12. AUTHENTICATION & NAVBAR SESSION MANAGEMENT
+// ============================================
+
+document.addEventListener("DOMContentLoaded", async function () {
+    // 1. Update Navigation Bar State
+    const currentUser = await SafeData.getCurrentUser();
+    updateNavbarAuth(currentUser);
+
+    // 2. Signup Form Handler
+    const signupForm = document.getElementById("signup-form");
+    if (signupForm) {
+        signupForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const name = document.getElementById("signup-name").value.trim();
+            const email = document.getElementById("signup-email").value.trim();
+            const password = document.getElementById("signup-password").value.trim();
+
+            const submitBtn = signupForm.querySelector('button[type="submit"]');
+            if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "Creating Account..."; }
+
+            const res = await SafeData.signUp(email, password, name);
+            if (res.success) {
+                alert("Account created successfully! Redirecting to Dashboard...");
+                window.location.href = "dashboard.html";
+            } else {
+                alert("Sign Up Error: " + res.message);
+                if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "Create Account"; }
+            }
+        });
+    }
+
+    // 3. Login Form Handler
+    const loginForm = document.getElementById("login-form");
+    if (loginForm) {
+        loginForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const email = document.getElementById("login-email").value.trim();
+            const password = document.getElementById("login-password").value.trim();
+
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "Logging in..."; }
+
+            const res = await SafeData.signIn(email, password);
+            if (res.success) {
+                window.location.href = "dashboard.html";
+            } else {
+                alert("Login Error: " + res.message);
+                if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "Log In"; }
+            }
+        });
+    }
+});
+
+function updateNavbarAuth(user) {
+    const navLinks = document.querySelectorAll("nav");
+    navLinks.forEach(nav => {
+        let authLink = nav.querySelector(".auth-nav-link");
+        if (!authLink) {
+            authLink = document.createElement("a");
+            authLink.className = "auth-nav-link";
+            nav.appendChild(authLink);
+        }
+
+        if (user) {
+            authLink.textContent = "Logout (" + (user.user_metadata?.full_name || user.email.split('@')[0]) + ")";
+            authLink.href = "#";
+            authLink.onclick = async (e) => {
+                e.preventDefault();
+                await SafeData.signOut();
+                window.location.href = "index.html";
+            };
+        } else {
+            authLink.textContent = "Login";
+            authLink.href = "login.html";
+            authLink.onclick = null;
+        }
+    });
+}

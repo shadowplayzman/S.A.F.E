@@ -7,14 +7,11 @@ const SUPABASE_ANON_KEY = 'sb_publishable_zwd1mCNXQXDz-Hxye_u9sw_GMy3kqXu';
 
 let supabaseClient = null;
 
-// Initialize Supabase if CDN library is loaded
 if (typeof supabase !== 'undefined' && SUPABASE_URL && !SUPABASE_URL.includes('YOUR_SUPABASE_PROJECT_ID')) {
     supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
-// Data persistence & API interface
 const SafeData = {
-    // Default demonstration shelters matching script.js
     defaultShelters: [
         { id: 1, name: "City Community Hall", city: "Ludhiana", capacity: 100, available: 45, facilities: ["Wheelchair Access", "Medical Support"] },
         { id: 2, name: "Northside Relief Centre", city: "Ludhiana", capacity: 80, available: 28, facilities: ["Food Services", "Family Rooms"] },
@@ -23,6 +20,55 @@ const SafeData = {
         { id: 5, name: "Hope Community Shelter", city: "Chandigarh", capacity: 90, available: 0, facilities: ["Family Rooms", "Wheelchair Access"] },
         { id: 6, name: "Central Relief Facility", city: "Amritsar", capacity: 150, available: 65, facilities: ["Food Services", "Medical Support", "Family Rooms"] }
     ],
+
+    // AUTH METHODS
+    async signUp(email, password, name) {
+        if (supabaseClient) {
+            const { data, error } = await supabaseClient.auth.signUp({
+                email: email,
+                password: password,
+                options: { data: { full_name: name } }
+            });
+            if (!error && data.user) return { success: true, user: data.user };
+            return { success: false, message: error ? error.message : "Sign up failed." };
+        }
+        // Local storage fallback
+        const demoUser = { id: 'usr_' + Date.now(), email, name };
+        localStorage.setItem('safeSessionUser', JSON.stringify(demoUser));
+        return { success: true, user: demoUser };
+    },
+
+    async signIn(email, password) {
+        if (supabaseClient) {
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+            if (!error && data.user) return { success: true, user: data.user };
+            return { success: false, message: error ? error.message : "Invalid credentials." };
+        }
+        // Local storage fallback
+        const demoUser = { id: 'usr_demo', email, name: email.split('@')[0] };
+        localStorage.setItem('safeSessionUser', JSON.stringify(demoUser));
+        return { success: true, user: demoUser };
+    },
+
+    async signOut() {
+        if (supabaseClient) {
+            await supabaseClient.auth.signOut();
+        }
+        localStorage.removeItem('safeSessionUser');
+        return { success: true };
+    },
+
+    async getCurrentUser() {
+        if (supabaseClient) {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (user) return user;
+        }
+        const local = localStorage.getItem('safeSessionUser');
+        return local ? JSON.parse(local) : null;
+    },
 
     // GET SHELTERS
     async getShelters() {
@@ -37,12 +83,10 @@ const SafeData = {
     // GET ALLOCATION REQUESTS
     async getRequests(userId = null) {
         if (supabaseClient) {
-            // Try query with shelters join first
             let query = supabaseClient.from('allocation_requests').select('*, shelters(name, city)');
             if (userId) query = query.eq('user_id', userId);
             let { data, error } = await query.order('created_at', { ascending: false });
             
-            // If join query fails (e.g. no foreign key constraint), fallback to direct table select
             if (error) {
                 let simpleQuery = supabaseClient.from('allocation_requests').select('*');
                 if (userId) simpleQuery = simpleQuery.eq('user_id', userId);
@@ -52,7 +96,6 @@ const SafeData = {
                 return data;
             }
         }
-        // Local Storage Fallback
         const local = localStorage.getItem('safeAllocationRequests');
         const requests = local ? JSON.parse(local) : [];
         if (userId) return requests.filter(r => r.user_id === userId);
@@ -61,9 +104,12 @@ const SafeData = {
 
     // CREATE ALLOCATION REQUEST
     async createRequest(requestData) {
+        const currentUser = await this.getCurrentUser();
+        const activeUserId = requestData.userId || (currentUser ? currentUser.id : null);
+
         if (supabaseClient) {
             const { data, error } = await supabaseClient.from('allocation_requests').insert([{
-                user_id: requestData.userId || null,
+                user_id: activeUserId,
                 shelter_id: requestData.shelterId,
                 requester_name: requestData.name,
                 requester_email: requestData.email,
@@ -74,11 +120,10 @@ const SafeData = {
             return { success: false, message: error ? error.message : "Failed to insert request" };
         }
 
-        // Local Storage Fallback
         const localRequests = JSON.parse(localStorage.getItem('safeAllocationRequests') || '[]');
         const newReq = {
             id: 'REQ-' + Date.now().toString().slice(-6),
-            user_id: requestData.userId || 'demo-user',
+            user_id: activeUserId || 'demo-user',
             shelter_id: requestData.shelterId,
             shelter_name: requestData.shelterName,
             requester_name: requestData.name,
@@ -135,5 +180,4 @@ const SafeData = {
     }
 };
 
-// Explicitly attach to window object to guarantee global availability
 window.SafeData = SafeData;
