@@ -514,6 +514,7 @@ if (allocationForm) {
 document.addEventListener('DOMContentLoaded', async () => {
     const tbody = document.getElementById('user-requests-tbody');
     
+    
     // Only run on dashboard page
     if (!tbody) return;
 
@@ -550,6 +551,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         tbody.innerHTML = `<tr><td colspan="6" class="table-loading">You have not submitted any allocation requests yet.</td></tr>`;
         return;
     }
+    
 
     tbody.innerHTML = requests.map(req => {
         const shelterName = req.shelters ? req.shelters.name : (req.shelter_name || `Shelter #${req.shelter_id || req.shelterId}`);
