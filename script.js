@@ -508,7 +508,7 @@ if (allocationForm) {
 }
 
 // ============================================
-// 9. USER DASHBOARD LOGIC
+// 9. USER DASHBOARD LOGIC (USER-SPECIFIC)
 // ============================================
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -517,7 +517,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Only run on dashboard page
     if (!tbody) return;
 
-    const requests = await SafeData.getRequests();
+    // 1. Get current authenticated user
+    const currentUser = await SafeData.getCurrentUser();
+
+    // 2. Require user session
+    if (!currentUser) {
+        tbody.innerHTML = `<tr><td colspan="6" class="table-loading">Please <a href="login.html" style="color:#10b981; font-weight:bold;">log in</a> to view your submitted requests.</td></tr>`;
+        return;
+    }
+
+    // 3. Pass currentUser.id to filter requests strictly for this user
+    const requests = await SafeData.getRequests(currentUser.id);
 
     // Stats Elements
     const statTotal = document.getElementById('stat-total');
@@ -537,7 +547,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (statRejected) statRejected.textContent = requests.filter(r => ['rejected', 'cancelled'].includes(getNormalizedStatus(r.status))).length;
 
     if (!requests || requests.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="table-loading">No allocation requests submitted yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="table-loading">You have not submitted any allocation requests yet.</td></tr>`;
         return;
     }
 
@@ -563,18 +573,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
     }).join('');
 });
-
-async function cancelRequest(id) {
-    if (confirm("Are you sure you want to cancel this pending request?")) {
-        const res = await SafeData.updateRequestStatus(id, 'cancelled');
-        if (res.success) {
-            location.reload();
-        } else {
-            alert("Failed to cancel request.");
-        }
-    }
-}
-
 // ============================================
 // 10. ADMIN DASHBOARD LOGIC
 // ============================================
